@@ -3,70 +3,74 @@
 def validar_nome(nome):
     if len(nome) == 0:
         return False
-    if not nome[0].isupper():
-        return False
-    for letra in nome[1:]:
-        if not letra.islower() and letra not in "áéíóúâêôãõçà":
-            return False
-    return True
+    primeira_letra = nome[0]
+    restante = nome[1:]
+    return primeira_letra.isupper() and restante.islower()
 
-def adicionar(lista):
-    primeiro = input("Primeiro nome: ")
-    ultimo = input("Último nome: ")
-    if not validar_nome(primeiro) or not validar_nome(ultimo):
-        print("Nome inválido! Use letra inicial maiúscula e acentuação correta.")
+def adicionar_pessoa(lista):
+    primeiro = input("Primeiro nome: ").strip()
+    if not validar_nome(primeiro):
+        print("Primeiro nome inválido!")
         return
-    idade = input("Idade: ")
+    ultimo = input("Último nome: ").strip()
+    if not validar_nome(ultimo):
+        print("Último nome inválido!")
+        return
+    idade = input("Idade: ").strip()
     if not idade.isdigit():
         print("Idade inválida!")
         return
-    lista.append([primeiro, ultimo, int(idade)])
+    lista.append((primeiro, ultimo, int(idade)))
     print("Pessoa adicionada com sucesso.")
 
-def ordenar_ascii(lista, index):
+def ordenar_por_ascii(lista, por='primeiro'):
+    index = 0 if por == 'primeiro' else 1
     return sorted(lista, key=lambda x: [ord(c) for c in x[index]])
 
-def listar(lista, tipo):
-    if tipo == "primeiro":
-        ordenada = ordenar_ascii(lista, 0)
-    else:
-        ordenada = ordenar_ascii(lista, 1)
+def listar_pessoas(lista):
+    if not lista:
+        print("Lista vazia.")
+        return
+    escolha = input("Ordenar por (primeiro/ultimo): ").strip().lower()
+    if escolha not in ['primeiro', 'ultimo']:
+        print("Escolha inválida.")
+        return
+    ordenada = ordenar_por_ascii(lista, por=escolha)
+    print("Lista de pessoas:")
     for p in ordenada:
-        print(f"{p[0]} {p[1]} ({p[2]} anos)")
+        print(f"{p[0]} {p[1]} - {p[2]} anos")
 
-def remover(lista, tipo):
-    nome = input(f"Digite o {tipo} nome para remover: ")
-    index = 0 if tipo == "primeiro" else 1
-    for p in lista:
-        if p[index] == nome:
-            lista.remove(p)
-            print("Removido com sucesso.")
+def remover_pessoa(lista):
+    escolha = input("Remover por (primeiro/ultimo): ").strip().lower()
+    if escolha not in ['primeiro', 'ultimo']:
+        print("Escolha inválida.")
+        return
+    nome = input("Nome a remover: ").strip()
+    index = 0 if escolha == 'primeiro' else 1
+    for i, pessoa in enumerate(lista):
+        if pessoa[index] == nome:
+            print(f"{pessoa[0]} {pessoa[1]} removido com sucesso.")
+            lista.pop(i)
             return
     print("Nome não encontrado.")
 
 def menu():
-    lista = []
+    lista_pessoas = []
     while True:
-        print("\n1. Adicionar")
-        print("2. Listar por primeiro nome")
-        print("3. Listar por último nome")
-        print("4. Remover por primeiro nome")
-        print("5. Remover por último nome")
-        print("6. Sair")
-        opcao = input("Opção: ")
-
-        if opcao == "1":
-            adicionar(lista)
-        elif opcao == "2":
-            listar(lista, "primeiro")
-        elif opcao == "3":
-            listar(lista, "último")
-        elif opcao == "4":
-            remover(lista, "primeiro")
-        elif opcao == "5":
-            remover(lista, "último")
-        elif opcao == "6":
-            print("Encerrando...")
+        print("\nMenu:")
+        print("1 - Adicionar pessoa")
+        print("2 - Listar pessoas")
+        print("3 - Remover pessoa")
+        print("4 - Sair")
+        opcao = input("Escolha uma opção: ").strip()
+        if opcao == '1':
+            adicionar_pessoa(lista_pessoas)
+        elif opcao == '2':
+            listar_pessoas(lista_pessoas)
+        elif opcao == '3':
+            remover_pessoa(lista_pessoas)
+        elif opcao == '4':
+            print("Encerrando programa.")
             break
         else:
             print("Opção inválida.")
